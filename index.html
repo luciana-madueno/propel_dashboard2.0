@@ -29,7 +29,7 @@
   /* HEADER BANNER */
   .header {
     position: relative;
-    background: var(--orange);
+    background: #fc5c3a;
     border-radius: var(--radius);
     margin-bottom: 24px;
     padding: 32px 36px;
@@ -38,21 +38,8 @@
     align-items: center;
     justify-content: space-between;
   }
-  .header::before {
-    content: '';
-    position: absolute;
-    top: 0; right: 60px; bottom: 0;
-    width: 90px;
-    background: var(--red);
-    clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
-  }
-  .header::after {
-    content: '';
-    position: absolute;
-    top: 0; right: 0; bottom: 0;
-    width: 60px;
-    background: var(--blue-dark);
-  }
+  .header::before { display: none; }
+  .header::after { display: none; }
   .header-left { position: relative; z-index: 1; }
   .header-left h1 { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
   .header-left p { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 4px; }
@@ -62,9 +49,10 @@
 
   /* SCORECARDS — fondo naranja, texto blanco */
   .scorecards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
-  .scorecard { background: var(--orange); border: none; border-radius: var(--radius); padding: 18px 20px; box-shadow: 0 2px 8px rgba(235,159,79,0.25); }
-  .scorecard .val { font-size: 34px; font-weight: 700; line-height: 1; letter-spacing: -0.5px; color: #fff; }
-  .scorecard .lbl { font-size: 12px; color: rgba(255,255,255,0.85); margin-top: 6px; }
+  .scorecard { background: var(--orange); border: none; border-radius: var(--radius); padding: 18px 24px; box-shadow: 0 2px 8px rgba(235,159,79,0.25); display: flex; align-items: center; gap: 16px; }
+  .scorecard .val { font-size: 48px; font-weight: 700; line-height: 1; letter-spacing: -1px; color: #fff; flex-shrink: 0; }
+  .scorecard-text { display: flex; flex-direction: column; justify-content: center; }
+  .scorecard .lbl { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.95); }
   .scorecard .sub { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 3px; }
   .val-ig { color: #fff !important; }
   .val-lk { color: #fff !important; }
@@ -175,9 +163,9 @@
   </div>
 
   <div class="scorecards">
-    <div class="scorecard"><div class="val val-orange" id="sc-posts">—</div><div class="lbl">Publicaciones</div><div class="sub" id="sc-posts-sub">—</div></div>
-    <div class="scorecard"><div class="val val-ig" id="sc-stories">—</div><div class="lbl">Historias</div><div class="sub">Instagram</div></div>
-    <div class="scorecard"><div class="val val-lk" id="sc-comments">—</div><div class="lbl">Comentarios</div><div class="sub">IG + LinkedIn</div></div>
+    <div class="scorecard"><div class="val" id="sc-posts">—</div><div class="scorecard-text"><div class="lbl">Publicaciones</div><div class="sub" id="sc-posts-sub">—</div></div></div>
+    <div class="scorecard"><div class="val" id="sc-stories">—</div><div class="scorecard-text"><div class="lbl">Historias</div><div class="sub">Instagram</div></div></div>
+    <div class="scorecard"><div class="val" id="sc-comments">—</div><div class="scorecard-text"><div class="lbl">Comentarios</div><div class="sub">IG + LinkedIn</div></div></div>
   </div>
 
 
