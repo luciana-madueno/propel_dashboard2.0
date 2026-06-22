@@ -172,9 +172,9 @@
   <!-- BARRA PROGRESO VS Q ANTERIOR -->
   <div class="progress-bar-section" id="progress-section">
     <div class="progress-meta-block">
-      <div class="progress-meta-label">Q anterior (inicio)</div>
+      <div class="progress-meta-label">Q1</div>
       <div class="progress-meta-value" id="prog-q1">—</div>
-      <div class="progress-meta-sub">Engagement cierre semana 1</div>
+      <div class="progress-meta-sub">Engagement</div>
     </div>
     <div class="progress-center">
       <div class="progress-center-label">
@@ -239,9 +239,7 @@
   <div class="section-hd">Comentarios con mejor rendimiento</div>
   <div class="cards-grid" id="cards-comments"><div class="loading">Cargando...</div></div>
 
-  <hr class="divider">
-  <div class="section-hd">Links más clickeados · Linktree</div>
-  <div class="links-list" id="links-lt"><div class="loading">Cargando...</div></div>
+
 
 </div>
 
@@ -579,7 +577,7 @@ function renderComments(rows) {
       ${comentario ? `<div class="comment-our">💬 ${comentario}</div>` : ''}
       ${respuesta ? `<div class="comment-response">↩ "${respuesta}"</div>` : ''}
       <div class="comment-footer">
-        ${linkPost ? `<a class="post-link" href="${linkPost}" target="_blank">Ver post →</a>` : '<span></span>'}
+        ${linkPost ? `<a class="post-link" href="${linkPost.startsWith('http') ? linkPost : 'https://' + linkPost}" target="_blank">Ver post →</a>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -623,8 +621,8 @@ function updateScorecards(igRows, lkRows, storiesRows, cmRows) {
 
 async function init() {
   try {
-    const [igRows, lkRows, cmRows, ltRows, storiesRows, engRows, progressRows] = await Promise.all([
-      fetchCSV(URL_IG), fetchCSV(URL_LK), fetchCSV(URL_CM), fetchCSV(URL_LT),
+    const [igRows, lkRows, cmRows, storiesRows, engRows, progressRows] = await Promise.all([
+      fetchCSV(URL_IG), fetchCSV(URL_LK), fetchCSV(URL_CM),
       fetchCSV(URL_STORIES), fetchCSV(URL_ENG), fetchCSV(URL_PROGRESS)
     ]);
 
@@ -642,7 +640,6 @@ async function init() {
     renderLKPosts(lkRows);
     renderStories(storiesRows);
     renderComments(cmRows);
-    renderLinktree(ltRows);
 
   } catch(e) {
     console.error(e);
