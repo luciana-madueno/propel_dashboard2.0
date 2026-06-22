@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engagement en Social Media Q2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  :root {
+    --blue-dark: #2c59b7;
+    --blue-mid: #486ec8;
+    --blue-light: #618ece;
+    --orange: #eb9f4f;
+    --red: #fc5c3a;
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --bg-soft: #fdf8f5;
+    --border: #ede8e3;
+    --text-primary: #1a1d23;
+    --text-secondary: #5f6470;
+    --text-tertiary: #9ca3af;
+    --radius: 14px;
+    --radius-sm: 9px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-primary); font-size: 14px; }
+  .dashboard { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
+
+  /* HEADER BANNER */
+  .header {
+    position: relative;
+    background: var(--orange);
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+    padding: 32px 36px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 60px; bottom: 0;
+    width: 90px;
+    background: var(--red);
+    clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 60px;
+    background: var(--blue-dark);
+  }
+  .header-left { position: relative; z-index: 1; }
+  .header-left h1 { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+  .header-left p { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 4px; }
+  .badge { position: relative; z-index: 1; font-size: 11px; padding: 5px 14px; border-radius: 99px; background: rgba(255,255,255,0.25); color: #fff; font-weight: 600; border: 1px solid rgba(255,255,255,0.3); }
+
+  .loading { text-align: center; padding: 32px; color: var(--text-secondary); font-size: 13px; }
+
+  /* SCORECARDS — fondo naranja, texto blanco */
+  .scorecards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .scorecard { background: var(--orange); border: none; border-radius: var(--radius); padding: 18px 20px; box-shadow: 0 2px 8px rgba(235,159,79,0.25); }
+  .scorecard .val { font-size: 34px; font-weight: 700; line-height: 1; letter-spacing: -0.5px; color: #fff; }
+  .scorecard .lbl { font-size: 12px; color: rgba(255,255,255,0.85); margin-top: 6px; }
+  .scorecard .sub { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 3px; }
+  .val-ig { color: #fff !important; }
+  .val-lk { color: #fff !important; }
+  .val-orange { color: #fff !important; }
+
+  /* CHARTS */
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; box-shadow: 0 1px 4px rgba(235,159,79,0.08); }
+  .chart-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; color: var(--text-secondary); }
+  .chart-sub { font-size: 11px; color: var(--text-tertiary); margin-bottom: 14px; }
+  .chart-wrap { height: 170px; position: relative; }
+
+  /* SECTION */
+  .section-hd { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--orange); margin-bottom: 12px; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+  /* TABS */
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 14px; gap: 4px; }
+  .tab { padding: 8px 18px; font-size: 13px; font-weight: 500; color: var(--text-secondary); background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; transition: all 0.15s; border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+  .tab:hover { background: var(--bg-soft); color: var(--orange); }
+  .tab.active-ig { color: var(--red); border-bottom-color: var(--red); background: #fff5f3; }
+  .tab.active-lk { color: var(--blue-dark); border-bottom-color: var(--blue-dark); background: #f0f4ff; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* POST CARDS */
+  .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .post-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.15s, border-color 0.15s; box-shadow: 0 1px 4px rgba(235,159,79,0.07); }
+  .post-card:hover { border-color: var(--orange); box-shadow: 0 4px 16px rgba(235,159,79,0.15); }
+  .post-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
+  .post-meta { display: flex; align-items: center; justify-content: space-between; }
+  .post-rank { font-size: 10px; font-weight: 700; color: var(--orange); background: #fff8f0; padding: 2px 7px; border-radius: 99px; }
+  .post-date { font-size: 10px; color: var(--text-tertiary); }
+  .post-title { font-size: 12px; font-weight: 500; color: var(--text-secondary); line-height: 1.5; }
+  .post-metrics { display: flex; gap: 12px; padding-top: 8px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+  .pm .v { font-size: 14px; font-weight: 700; color: var(--orange); display: block; }
+  .pm .l { font-size: 9px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1px; }
+  .post-insight { font-size: 10px; color: var(--text-secondary); background: #fff8f0; padding: 6px 9px; border-radius: 0 6px 6px 0; line-height: 1.5; border-left: 2px solid var(--orange); }
+  .post-insight.ig { background: #fff5f3; border-left-color: var(--red); }
+  .post-link { font-size: 10px; color: var(--orange); font-weight: 600; text-decoration: none; margin-top: auto; display: inline-flex; align-items: center; gap: 3px; }
+  .post-link:hover { color: var(--red); }
+
+  /* COMMENT CARDS */
+  .comment-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 4px rgba(235,159,79,0.07); }
+  .comment-header { display: flex; align-items: center; gap: 8px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .commenter-name { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .commenter-role { font-size: 10px; color: var(--text-tertiary); }
+  .net-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 99px; margin-left: auto; flex-shrink: 0; }
+  .net-badge.lk { background: #dce8f8; color: #486ec8; }
+  .net-badge.ig { background: #fde8e4; color: #fc5c3a; }
+  .comment-our { font-size: 11px; color: var(--text-secondary); background: #fff8f0; border-left: 2px solid var(--orange); padding: 6px 9px; border-radius: 0 6px 6px 0; line-height: 1.5; font-weight: 500; }
+  .comment-response { font-size: 11px; color: var(--blue-mid); line-height: 1.6; font-style: italic; background: #f0f4ff; padding: 6px 9px; border-radius: 6px; border-left: 2px solid var(--blue-light); }
+  .comment-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 6px; border-top: 1px solid var(--border); }
+  .comment-ref { font-size: 10px; color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
+
+  /* LINKTREE */
+  .links-list { display: flex; flex-direction: column; gap: 8px; }
+  .link-row { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; transition: box-shadow 0.15s; }
+  .link-row:hover { box-shadow: 0 3px 10px rgba(235,159,79,0.12); border-color: var(--orange); }
+  .link-rank { font-size: 11px; font-weight: 700; color: var(--orange); width: 18px; flex-shrink: 0; }
+  .link-info { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+  .link-name { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+  .link-bar-track { background: #fff3e6; border-radius: 99px; height: 5px; overflow: hidden; }
+  .link-bar-fill { height: 5px; border-radius: 99px; background: linear-gradient(90deg, var(--orange), var(--red)); }
+  .link-clicks { font-size: 14px; font-weight: 700; color: var(--orange); white-space: nowrap; }
+
+  /* BARRA DE PROGRESO VS Q ANTERIOR */
+  .progress-bar-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 4px rgba(235,159,79,0.08);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    align-items: center;
+  }
+  .progress-meta-block { display: flex; flex-direction: column; gap: 4px; }
+  .progress-meta-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); }
+  .progress-meta-value { font-size: 22px; font-weight: 700; color: var(--orange); }
+  .progress-meta-sub { font-size: 11px; color: var(--text-tertiary); }
+  .progress-center { display: flex; flex-direction: column; gap: 8px; }
+  .progress-center-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); display: flex; justify-content: space-between; }
+  .progress-track { background: #f0f4ff; border-radius: 99px; height: 10px; overflow: hidden; width: 100%; }
+  .progress-fill { height: 10px; border-radius: 99px; background: linear-gradient(90deg, var(--orange), var(--red)); transition: width 0.8s ease; }
+  .progress-sublabels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-tertiary); }
+  .progress-right { display: flex; flex-direction: column; gap: 10px; }
+  .progress-stat { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .progress-stat-label { font-size: 11px; color: var(--text-secondary); }
+  .progress-stat-val { font-size: 14px; font-weight: 700; }
+  .progress-stat-val.up { color: #22c55e; }
+  .progress-stat-val.down { color: var(--red); }
+  .progress-stat-val.neutral { color: var(--orange); }
+</style>
+</head>
+<body>
+<div class="dashboard">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Engagement en Social Media Q2</h1>
+      <p>Instagram · LinkedIn</p>
+    </div>
+    <span class="badge" id="badge-period">Cargando...</span>
+  </div>
+
+  <div class="scorecards">
+    <div class="scorecard"><div class="val val-orange" id="sc-posts">—</div><div class="lbl">Publicaciones</div><div class="sub" id="sc-posts-sub">—</div></div>
+    <div class="scorecard"><div class="val val-ig" id="sc-stories">—</div><div class="lbl">Historias</div><div class="sub">Instagram</div></div>
+    <div class="scorecard"><div class="val val-lk" id="sc-comments">—</div><div class="lbl">Comentarios</div><div class="sub">IG + LinkedIn</div></div>
+  </div>
+
+
+  <!-- BARRA PROGRESO VS Q ANTERIOR -->
+  <div class="progress-bar-section" id="progress-section">
+    <div class="progress-meta-block">
+      <div class="progress-meta-label">Q anterior (inicio)</div>
+      <div class="progress-meta-value" id="prog-q1">—</div>
+      <div class="progress-meta-sub">Engagement cierre semana 1</div>
+    </div>
+    <div class="progress-center">
+      <div class="progress-center-label">
+        <span>Progreso hacia meta +30%</span>
+        <span id="prog-pct-label">—%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+      <div class="progress-sublabels">
+        <span>Q anterior</span>
+        <span id="prog-meta-label">Meta: —</span>
+      </div>
+    </div>
+    <div class="progress-right">
+      <div class="progress-stat">
+        <span class="progress-stat-label">Engagement actual</span>
+        <span class="progress-stat-val neutral" id="prog-actual">—</span>
+      </div>
+      <div class="progress-stat">
+        <span class="progress-stat-label">Crecimiento total</span>
+        <span class="progress-stat-val" id="prog-growth">—</span>
+      </div>
+      <div class="progress-stat">
+        <span class="progress-stat-label">Falta para meta</span>
+        <span class="progress-stat-val" id="prog-remaining">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">Progreso de engagement <span style="color:var(--red)">Instagram</span></div>
+      <div class="chart-sub">Tasa de interacción por semana</div>
+      <div class="chart-wrap"><canvas id="chartIG"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Progreso de engagement <span style="color:var(--blue-dark)">LinkedIn</span></div>
+      <div class="chart-sub">Tasa de interacción por semana</div>
+      <div class="chart-wrap"><canvas id="chartLK"></canvas></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-hd">Posts con mejor rendimiento</div>
+  <div class="tabs">
+    <button class="tab active-ig" id="tab-ig" onclick="switchTab('ig')">Instagram</button>
+    <button class="tab" id="tab-lk" onclick="switchTab('lk')">LinkedIn</button>
+  </div>
+  <div class="tab-panel active" id="panel-ig">
+    <div class="cards-grid" id="cards-ig"><div class="loading">Cargando...</div></div>
+  </div>
+  <div class="tab-panel" id="panel-lk">
+    <div class="cards-grid" id="cards-lk"><div class="loading">Cargando...</div></div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-hd">Historias · Resumen del período</div>
+  <div class="scorecards">
+    <div class="scorecard">
+      <div class="lbl" style="margin-bottom:10px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.9);">Visualizaciones</div>
+      <div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;">
+        <div><div class="val" id="st-views-max" style="color:#fff">—</div><div class="lbl">Máx. historia</div></div>
+        <div><div style="font-size:22px;font-weight:700;color:rgba(255,255,255,0.75)" id="st-views-avg">—</div><div class="lbl">Promedio Q</div></div>
+      </div>
+    </div>
+    <div class="scorecard">
+      <div class="lbl" style="margin-bottom:10px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.9);">Clics en el enlace</div>
+      <div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;">
+        <div><div class="val" id="st-clicks-total" style="color:#fff">—</div><div class="lbl">Total Q</div></div>
+        <div><div style="font-size:22px;font-weight:700;color:rgba(255,255,255,0.75)" id="st-clicks-max">—</div><div class="lbl">Máx.</div></div>
+        <div><div style="font-size:22px;font-weight:700;color:rgba(255,255,255,0.55)" id="st-clicks-avg">—</div><div class="lbl">Promedio</div></div>
+      </div>
+    </div>
+    <div class="scorecard">
+      <div class="lbl" style="margin-bottom:10px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.9);">Visitas al perfil</div>
+      <div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;">
+        <div><div class="val" id="st-profile-total" style="color:#fff">—</div><div class="lbl">Total Q</div></div>
+        <div><div style="font-size:22px;font-weight:700;color:rgba(255,255,255,0.75)" id="st-profile-max">—</div><div class="lbl">Máx.</div></div>
+        <div><div style="font-size:22px;font-weight:700;color:rgba(255,255,255,0.55)" id="st-profile-avg">—</div><div class="lbl">Promedio</div></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-hd">Comentarios con mejor rendimiento</div>
+  <div class="cards-grid" id="cards-comments"><div class="loading">Cargando...</div></div>
+
+  <hr class="divider">
+  <div class="section-hd">Links más clickeados · Linktree</div>
+  <div class="links-list" id="links-lt"><div class="loading">Cargando...</div></div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+const URL_IG       = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTgYWBo2a9o2moNLuetfaOMIPKZCn7VTe2qMTc-XwJApkZbpPZS9InD0QV2SdEQh-9thge9o_pQ4oY/pub?gid=583930079&single=true&output=csv';
+const URL_LK       = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTgYWBo2a9o2moNLuetfaOMIPKZCn7VTe2qMTc-XwJApkZbpPZS9InD0QV2SdEQh-9thge9o_pQ4oY/pub?gid=231631439&single=true&output=csv';
+const URL_CM       = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTgYWBo2a9o2moNLuetfaOMIPKZCn7VTe2qMTc-XwJApkZbpPZS9InD0QV2SdEQh-9thge9o_pQ4oY/pub?gid=1592318439&single=true&output=csv';
+const URL_LT       = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTgYWBo2a9o2moNLuetfaOMIPKZCn7VTe2qMTc-XwJApkZbpPZS9InD0QV2SdEQh-9thge9o_pQ4oY/pub?gid=788344558&single=true&output=csv';
+const URL_STORIES  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTgYWBo2a9o2moNLuetfaOMIPKZCn7VTe2qMTc-XwJApkZbpPZS9InD0QV2SdEQh-9thge9o_pQ4oY/pub?gid=1157588083&single=true&output=csv';
+const URL_ENG      = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTgYWBo2a9o2moNLuetfaOMIPKZCn7VTe2qMTc-XwJApkZbpPZS9InD0QV2SdEQh-9thge9o_pQ4oY/pub?gid=300532583&single=true&output=csv';
+const URL_PROGRESS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQTgYWBo2a9o2moNLuetfaOMIPKZCn7VTe2qMTc-XwJApkZbpPZS9InD0QV2SdEQh-9thge9o_pQ4oY/pub?gid=226932387&single=true&output=csv';
+
+function fetchCSV(url) {
+  return new Promise((resolve, reject) => {
+    Papa.parse(url, {
+      download: true, header: true, skipEmptyLines: true,
+      complete: r => resolve(r.data),
+      error: e => reject(e)
+    });
+  });
+}
+
+function avg(arr) {
+  const nums = arr.map(n => parseFloat(n)).filter(n => !isNaN(n));
+  return nums.length ? nums.reduce((a,b) => a+b, 0) / nums.length : 0;
+}
+function fmt(n, d=1) { return parseFloat(n||0).toFixed(d); }
+function fmtNum(n) { return parseFloat(n||0).toLocaleString('es-MX'); }
+
+function key(row, ...names) {
+  for (const n of names) { if (row[n] !== undefined && row[n] !== '') return row[n]; }
+  return '';
+}
+
+function tasa(r) {
+  const v = key(r,'tasa_de_interaccion','tasa_interaccion','tasa de interaccion','Tasa de interaccion','engagement_rate','Engagement Rate');
+  return parseFloat(v||0);
+}
+
+function isIGPost(r) { return true; }
+
+function fmtFecha(raw) {
+  if (!raw) return '';
+  const d = new Date(raw);
+  if (isNaN(d)) return String(raw).slice(0,10);
+  return d.toLocaleDateString('es-MX', {day:'2-digit', month:'short', year:'numeric'});
+}
+
+function switchTab(net) {
+  document.getElementById('panel-ig').classList.toggle('active', net==='ig');
+  document.getElementById('panel-lk').classList.toggle('active', net==='lk');
+  document.getElementById('tab-ig').className = 'tab' + (net==='ig' ? ' active-ig' : '');
+  document.getElementById('tab-lk').className = 'tab' + (net==='lk' ? ' active-lk' : '');
+}
+
+let chartIG, chartLK;
+
+function buildChartEng(id, data, color) {
+  if (!data.length) return;
+  const ctx = document.getElementById(id);
+  return new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.map(d => {
+        const date = new Date(d.semana);
+        return isNaN(date) ? d.semana : date.toLocaleDateString('es-MX', {day:'2-digit', month:'short'});
+      }),
+      datasets: [
+        {
+          label: 'Engagement cierre',
+          data: data.map(d => d.cierre),
+          borderColor: color,
+          backgroundColor: (ctx) => {
+            const chart = ctx.chart;
+            const {ctx: c, chartArea} = chart;
+            if (!chartArea) return color + '10';
+            const gradient = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+            gradient.addColorStop(0, color + '28');
+            gradient.addColorStop(1, color + '00');
+            return gradient;
+          },
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 6,
+          pointBackgroundColor: color,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          tension: 0.4,
+          fill: true
+        },
+        {
+          label: 'Meta',
+          data: data.map(d => d.meta),
+          borderColor: color + '55',
+          borderWidth: 1.5,
+          borderDash: [4, 4],
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.4,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: true, position: 'top', align: 'end',
+          labels: { boxWidth: 10, boxHeight: 2, font: { size: 10 }, color: '#9ca3af', padding: 12 }
+        },
+        tooltip: {
+          backgroundColor: '#fff',
+          titleColor: '#1a1d23',
+          bodyColor: '#5f6470',
+          borderColor: '#ede8e3',
+          borderWidth: 1,
+          padding: 10,
+          cornerRadius: 8,
+          callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}` }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          border: { display: false },
+          ticks: { font: { size: 10 }, color: '#9ca3af', maxRotation: 0 }
+        },
+        y: {
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          border: { display: false },
+          ticks: { font: { size: 10 }, color: '#9ca3af', padding: 8 },
+          title: { display: false }
+        }
+      }
+    }
+  });
+}
+
+function parseEngRows(engRows, plataforma) {
+  return engRows
+    .filter(r => (key(r,'Plataforma','plataforma')||'').toLowerCase().includes(plataforma))
+    .map(r => ({
+      semana: key(r,'Semana','semana'),
+      cierre: parseFloat(key(r,'Engagement cierre')||0),
+      meta: parseFloat(key(r,'Meta')||0)
+    }))
+    .filter(d => d.semana !== '')
+    .sort((a,b) => new Date(a.semana) - new Date(b.semana));
+}
+
+const avatarColors = [
+  {bg:'#fff3e6',color:'#eb9f4f'},
+  {bg:'#fde8e4',color:'#fc5c3a'},
+  {bg:'#dce8f8',color:'#2c59b7'}
+];
+
+
+function renderProgress(progressRows) {
+  if (!progressRows.length) return;
+
+  // Ordenar por semana y filtrar filas con engagement válido
+  const rows = progressRows
+    .map(r => ({
+      semana: key(r,'Semana','semana'),
+      eng:    parseFloat(key(r,'Engagement','engagement')||0),
+      meta:   parseFloat(key(r,'Meta total','meta total','Meta','meta')||0)
+    }))
+    .filter(d => d.semana && d.eng > 0)
+    .sort((a,b) => new Date(a.semana) - new Date(b.semana));
+
+  if (rows.length < 2) return;
+
+  const inicial = rows[0].eng;                          // primera semana = Q anterior
+  const actual  = rows[rows.length - 1].eng;            // última semana con datos
+  const metaVal = rows[rows.length - 1].meta || (inicial * 1.3); // meta de la última semana o +30%
+  const metaTotal = inicial * 1.3;                      // meta calculada +30%
+
+  const crecimiento = ((actual - inicial) / inicial) * 100;
+  const progPct     = Math.min(Math.max((crecimiento / 30) * 100, 0), 100);
+  const falta       = metaTotal - actual;
+
+  // Bloque izquierdo
+  document.getElementById('prog-q1').textContent = fmt(inicial, 1);
+
+  // Barra central
+  document.getElementById('prog-meta-label').textContent = `Meta: ${fmt(metaTotal, 1)}`;
+  document.getElementById('prog-pct-label').textContent  = `${fmt(progPct, 0)}% de la meta`;
+  setTimeout(() => {
+    document.getElementById('prog-fill').style.width = Math.max(progPct, 2) + '%';
+  }, 300);
+
+  // Bloque derecho
+  document.getElementById('prog-actual').textContent = fmt(actual, 1);
+
+  const growthEl = document.getElementById('prog-growth');
+  growthEl.textContent = (crecimiento >= 0 ? '+' : '') + fmt(crecimiento, 1) + '%';
+  growthEl.className   = 'progress-stat-val ' + (crecimiento >= 30 ? 'up' : crecimiento > 0 ? 'neutral' : 'down');
+
+  const remainEl = document.getElementById('prog-remaining');
+  if (falta <= 0) {
+    remainEl.textContent = '¡Meta alcanzada! 🎉';
+    remainEl.className   = 'progress-stat-val up';
+  } else {
+    remainEl.textContent = '+' + fmt(falta, 1) + ' pts para la meta';
+    remainEl.className   = 'progress-stat-val neutral';
+  }
+}
+
+function driveUrl(raw) {
+  if (!raw) return '';
+  // Convierte cualquier formato de Drive a URL de imagen directa
+  const m = raw.match(/[-\w]{25,}/);
+  if (raw.includes('drive.google.com') && m) {
+    return 'https://drive.google.com/uc?export=view&id=' + m[0];
+  }
+  return raw;
+}
+function thumbIG(p, i) {
+  const raw = key(p,'thumbnail','Thumbnail','thumbnail_url','Thumbnail URL');
+  const url = driveUrl(raw);
+  if (url) {
+    return `<img src="${url}" alt="${key(p,'titulo','Titulo')}" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block;border-radius:var(--radius) var(--radius) 0 0;" onerror="this.style.display='none'">`;
+  }
+  return '';
+}
+function thumbLK(p, i) {
+  const raw = key(p,'thumbnail','Thumbnail','thumbnail_url','Thumbnail URL');
+  const url = driveUrl(raw);
+  if (url) {
+    return `<img src="${url}" alt="${key(p,'titulo','Titulo')}" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;border-radius:var(--radius) var(--radius) 0 0;" onerror="this.style.display='none'">`;
+  }
+  return '';
+}
+
+function renderIGPosts(rows) {
+  const posts = rows.sort((a,b) => parseFloat(key(b,'alcance','Alcance')||0) - parseFloat(key(a,'alcance','Alcance')||0)).slice(0,3);
+  if (!posts.length) { document.getElementById('cards-ig').innerHTML = '<div class="loading">No se encontraron posts en la Sheet de Instagram</div>'; return; }
+  document.getElementById('cards-ig').innerHTML = posts.map((p,i) => `
+    <div class="post-card">
+      ${thumbIG(p,i)}
+      <div class="post-body">
+        <div class="post-meta"><span class="post-rank">#${i+1}</span><span class="post-date">${fmtFecha(key(p,'fecha','Fecha'))}</span></div>
+        <div class="post-title">${key(p,'titulo','Titulo','título')}</div>
+        <div class="post-metrics">
+          <div class="pm"><span class="v">${fmtNum(key(p,'alcance','Alcance'))}</span><span class="l">Vistas</span></div>
+          <div class="pm"><span class="v">${Math.round(tasa(p))}</span><span class="l">Tasa inter.</span></div>
+        </div>
+        ${key(p,'insight','Insight') ? `<div class="post-insight ig">${key(p,'insight','Insight')}</div>` : ''}
+        ${key(p,'link','Link','url','URL') ? `<a class="post-link" href="${key(p,'link','Link','url','URL')}" target="_blank">Ver post →</a>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function renderLKPosts(rows) {
+  const posts = rows.sort((a,b) => parseFloat(key(b,'impresiones','Impresiones')||0) - parseFloat(key(a,'impresiones','Impresiones')||0)).slice(0,3);
+  if (!posts.length) { document.getElementById('cards-lk').innerHTML = '<div class="loading">No se encontraron posts en la Sheet de LinkedIn</div>'; return; }
+  document.getElementById('cards-lk').innerHTML = posts.map((p,i) => `
+    <div class="post-card">
+      ${thumbLK(p,i)}
+      <div class="post-body">
+        <div class="post-meta"><span class="post-rank">#${i+1}</span><span class="post-date">${fmtFecha(key(p,'fecha','Fecha'))}</span></div>
+        <div class="post-title">${key(p,'titulo','Titulo','título')}</div>
+        <div class="post-metrics">
+          <div class="pm"><span class="v">${fmtNum(key(p,'impresiones','Impresiones'))}</span><span class="l">Vistas</span></div>
+          <div class="pm"><span class="v">${Math.round(tasa(p))}</span><span class="l">Tasa inter.</span></div>
+        </div>
+        ${key(p,'insight','Insight') ? `<div class="post-insight">${key(p,'insight','Insight')}</div>` : ''}
+        ${key(p,'link','Link','url','URL') ? `<a class="post-link" href="${key(p,'link','Link','url','URL')}" target="_blank">Ver post →</a>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function renderStories(rows) {
+  if (!rows.length) {
+    ['st-views-max','st-views-avg','st-clicks-total','st-clicks-max','st-clicks-avg','st-profile-total','st-profile-max','st-profile-avg'].forEach(id => {
+      document.getElementById(id).textContent = '—';
+    });
+    return;
+  }
+  const views   = rows.map(r => parseFloat(key(r,'Visualizaciones','visualizaciones')||0));
+  const clicks  = rows.map(r => parseFloat(key(r,'Clics en el enlace','clics_enlace')||0));
+  const profile = rows.map(r => parseFloat(key(r,'Visitas al perfil','visitas_perfil')||0));
+  const sum = arr => arr.reduce((a,b) => a+b, 0);
+
+  document.getElementById('st-views-max').textContent    = fmtNum(Math.max(...views));
+  document.getElementById('st-views-avg').textContent    = fmtNum(Math.round(avg(views)));
+  document.getElementById('st-clicks-total').textContent = fmtNum(sum(clicks));
+  document.getElementById('st-clicks-max').textContent   = fmtNum(Math.max(...clicks));
+  document.getElementById('st-clicks-avg').textContent   = fmtNum(Math.round(avg(clicks)));
+  document.getElementById('st-profile-total').textContent= fmtNum(sum(profile));
+  document.getElementById('st-profile-max').textContent  = fmtNum(Math.max(...profile));
+  document.getElementById('st-profile-avg').textContent  = fmtNum(Math.round(avg(profile)));
+}
+
+function renderComments(rows) {
+  const top = rows
+    .filter(r => (key(r,'Top Respuestas','top respuestas')||'').toLowerCase().includes('sí') ||
+                 (key(r,'Top Respuestas','top respuestas')||'').toLowerCase().includes('si'))
+    .slice(0,3);
+  if (!top.length) { document.getElementById('cards-comments').innerHTML = '<div class="loading">No hay comentarios marcados como Top Respuestas</div>'; return; }
+  document.getElementById('cards-comments').innerHTML = top.map((c,i) => {
+    const org = key(c,'Organización / Persona','Organizacion');
+    const initials = org.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase() || '??';
+    const ac = avatarColors[i];
+    const red = (key(c,'Plataforma','plataforma')||'').toLowerCase().includes('instagram') ? 'ig' : 'lk';
+    const comentario = key(c,'Comentario','comentario');
+    const respuesta = key(c,'Respuesta 1','Respuesta1','respuesta 1','respuesta1','Respuesta','respuesta');
+    const linkPost = key(c,'Link del post','link del post');
+    const post = key(c,'Post','post');
+    const fecha = fmtFecha(key(c,'Fecha','fecha'));
+    return `
+    <div class="comment-card">
+      <div class="comment-header">
+        <div class="avatar" style="background:${ac.bg};color:${ac.color}">${initials}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="commenter-name">${org}</div>
+          <div class="commenter-role">${fecha}</div>
+        </div>
+        <span class="net-badge ${red}">${red === 'ig' ? 'Instagram' : 'LinkedIn'}</span>
+      </div>
+      ${post ? `<div style="font-size:10px;color:var(--text-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">→ ${post}</div>` : ''}
+      ${comentario ? `<div class="comment-our">💬 ${comentario}</div>` : ''}
+      ${respuesta ? `<div class="comment-response">↩ "${respuesta}"</div>` : ''}
+      <div class="comment-footer">
+        ${linkPost ? `<a class="post-link" href="${linkPost}" target="_blank">Ver post →</a>` : '<span></span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderLinktree(rows) {
+  const sorted = rows.sort((a,b) => parseFloat(key(b,'clics','Clics')||0) - parseFloat(key(a,'clics','Clics')||0)).slice(0,5);
+  if (!sorted.length) { document.getElementById('links-lt').innerHTML = '<div class="loading">No se encontraron datos en la Sheet de Linktree</div>'; return; }
+  const maxC = parseFloat(key(sorted[0],'clics','Clics')||1);
+  document.getElementById('links-lt').innerHTML = sorted.map((l,i) => {
+    const clics = parseFloat(key(l,'clics','Clics')||0);
+    return `
+    <div class="link-row">
+      <span class="link-rank">#${i+1}</span>
+      <div class="link-info">
+        <span class="link-name">${key(l,'link_nombre','Link','nombre','Nombre')}</span>
+        <div class="link-bar-track"><div class="link-bar-fill" style="width:${Math.round(clics/maxC*100)}%"></div></div>
+      </div>
+      <span class="link-clicks">${clics} clics</span>
+    </div>`;
+  }).join('');
+}
+
+function updateScorecards(igRows, lkRows, storiesRows, cmRows) {
+  document.getElementById('sc-posts').textContent = igRows.length + lkRows.length;
+  document.getElementById('sc-posts-sub').textContent = `${lkRows.length} LK · ${igRows.length} IG`;
+  document.getElementById('sc-stories').textContent = storiesRows.length;
+  document.getElementById('sc-comments').textContent = cmRows.length;
+
+  const allDates = [...igRows,...lkRows].map(r=>key(r,'fecha','Fecha')).filter(Boolean)
+    .map(d=>new Date(d)).filter(d=>!isNaN(d)).sort((a,b)=>a-b);
+  if (allDates.length) {
+    const opts = {month:'short', year:'numeric'};
+    const first = allDates[0].toLocaleDateString('es-MX', opts);
+    const last  = allDates[allDates.length-1].toLocaleDateString('es-MX', opts);
+    document.getElementById('badge-period').textContent = first===last ? first : `${first} → ${last}`;
+  } else {
+    document.getElementById('badge-period').textContent = 'Q2 2026';
+  }
+}
+
+async function init() {
+  try {
+    const [igRows, lkRows, cmRows, ltRows, storiesRows, engRows, progressRows] = await Promise.all([
+      fetchCSV(URL_IG), fetchCSV(URL_LK), fetchCSV(URL_CM), fetchCSV(URL_LT),
+      fetchCSV(URL_STORIES), fetchCSV(URL_ENG), fetchCSV(URL_PROGRESS)
+    ]);
+
+    updateScorecards(igRows, lkRows, storiesRows, cmRows);
+
+    if (chartIG) chartIG.destroy();
+    if (chartLK) chartLK.destroy();
+    const igEngData = parseEngRows(engRows, 'instagram');
+    const lkEngData = parseEngRows(engRows, 'linkedin');
+    if (igEngData.length) chartIG = buildChartEng('chartIG', igEngData, '#fc5c3a');
+    if (lkEngData.length) chartLK = buildChartEng('chartLK', lkEngData, '#2c59b7');
+
+    renderProgress(progressRows);
+    renderIGPosts(igRows);
+    renderLKPosts(lkRows);
+    renderStories(storiesRows);
+    renderComments(cmRows);
+    renderLinktree(ltRows);
+
+  } catch(e) {
+    console.error(e);
+    document.getElementById('badge-period').textContent = 'Error al cargar';
+    ['cards-ig','cards-lk','cards-comments'].forEach(id => {
+      document.getElementById(id).innerHTML = '<div class="loading" style="color:#fc5c3a">Error al cargar datos. Verifica que las Sheets estén publicadas como CSV.</div>';
+    });
+  }
+}
+
+init();
+</script>
+</body>
+</html>
