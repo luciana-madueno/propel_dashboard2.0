@@ -556,24 +556,33 @@ function renderLKPosts(rows) {
 
 function renderStories(rows) {
   if (!rows.length) {
-    ['st-views-max','st-views-avg','st-clicks-total','st-clicks-max','st-clicks-avg','st-profile-total','st-profile-max','st-profile-avg'].forEach(id => {
-      document.getElementById(id).textContent = '—';
-    });
+    document.getElementById('cards-stories').innerHTML = '<div class="loading">No se encontraron historias en la Sheet</div>';
     return;
   }
-  const views   = rows.map(r => parseFloat(key(r,'Visualizaciones','visualizaciones')||0));
-  const clicks  = rows.map(r => parseFloat(key(r,'Clics en el enlace','clics_enlace')||0));
-  const profile = rows.map(r => parseFloat(key(r,'Visitas al perfil','visitas_perfil')||0));
-  const sum = arr => arr.reduce((a,b) => a+b, 0);
 
-  document.getElementById('st-views-max').textContent    = fmtNum(Math.max(...views));
-  document.getElementById('st-views-avg').textContent    = fmtNum(Math.round(avg(views)));
-  document.getElementById('st-clicks-total').textContent = fmtNum(sum(clicks));
-  document.getElementById('st-clicks-max').textContent   = fmtNum(Math.max(...clicks));
-  document.getElementById('st-clicks-avg').textContent   = fmtNum(Math.round(avg(clicks)));
-  document.getElementById('st-profile-total').textContent= fmtNum(sum(profile));
-  document.getElementById('st-profile-max').textContent  = fmtNum(Math.max(...profile));
-  document.getElementById('st-profile-avg').textContent  = fmtNum(Math.round(avg(profile)));
+  const top = rows
+    .sort((a,b) => parseFloat(key(b,'Visualizaciones','visualizaciones')||0) - parseFloat(key(a,'Visualizaciones','visualizaciones')||0))
+    .slice(0,3);
+
+  document.getElementById('cards-stories').innerHTML = top.map((s,i) => {
+    const thumb = driveUrl(key(s,'Thumbnail','thumbnail','thumbnail_url'));
+    const vistas = fmtNum(key(s,'Visualizaciones','visualizaciones'));
+    const interacciones = fmtNum(key(s,'Interacciones','interacciones'));
+    const desc = key(s,'Descripción','descripcion','Descripcion');
+    const fecha = fmtFecha(key(s,'Hora de publicación','fecha','Fecha'));
+    return `
+    <div class="post-card">
+      ${thumb ? `<img src="${thumb}" alt="Historia ${i+1}" style="width:100%;aspect-ratio:9/16;object-fit:contain;display:block;border-radius:var(--radius) var(--radius) 0 0;background:#f0f0f0;" onerror="this.style.display='none'">` : ''}
+      <div class="post-body">
+        <div class="post-meta"><span class="post-rank">#${i+1}</span><span class="post-date">${fecha}</span></div>
+        <div class="post-title">${desc || 'Historia'}</div>
+        <div class="post-metrics">
+          <div class="pm"><span class="v">${vistas}</span><span class="l">Visualizaciones</span></div>
+          <div class="pm"><span class="v">${interacciones}</span><span class="l">Interacciones</span></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderComments(rows) {
