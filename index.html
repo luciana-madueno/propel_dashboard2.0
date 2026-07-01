@@ -185,8 +185,8 @@
         <div class="progress-fill" id="prog-fill" style="width:0%"></div>
       </div>
       <div class="progress-sublabels">
-        <span>Q anterior</span>
-        <span id="prog-meta-label">Meta: —</span>
+        <span>Q1: 21</span>
+        <span id="prog-meta-label">Meta Q2: —</span>
       </div>
     </div>
     <div class="progress-right">
@@ -429,7 +429,7 @@ function renderProgress(progressRows) {
   document.getElementById('prog-q1').textContent = fmt(inicial, 1);
 
   // Barra central
-  document.getElementById('prog-meta-label').textContent = `Meta: ${fmt(metaTotal, 1)}`;
+  document.getElementById('prog-meta-label').textContent = `Meta Q2: ${fmt(metaTotal, 1)}`;
   document.getElementById('prog-pct-label').textContent  = `${fmt(progPct, 0)}% de la meta`;
   setTimeout(() => {
     document.getElementById('prog-fill').style.width = Math.max(progPct, 2) + '%';
